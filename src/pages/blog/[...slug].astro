@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await post.render();
+---
+
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>{post.data.title}</title>
+  </head>
+  <body>
+    <article>
+      <header>
+        <h1>{post.data.title}</h1>
+        <p>
+          <time datetime={post.data.pubDate.toISOString()}>
+            {post.data.pubDate.toLocaleDateString('zh-CN')}
+          </time>
+          {post.data.tags.length > 0 && (
+            <span>
+              {' '}· {post.data.tags.map((t) => `#${t}`).join(' ')}
+            </span>
+          )}
+        </p>
+      </header>
+      <hr />
+      <Content />
+    </article>
+    <p>
+      <a href="/blog/">← 返回博客列表</a>
+    </p>
+  </body>
+</html>

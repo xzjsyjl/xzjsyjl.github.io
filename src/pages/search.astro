@@ -1,0 +1,92 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+const posts = await getCollection('blog');
+const query = Astro.url.searchParams.get('q') || '';
+
+const searchData = posts.map((p) => ({
+  id: p.id,
+  title: p.data.title,
+  description: p.data.description,
+  tags: p.data.tags,
+  pubDate: p.data.pubDate.toISOString(),
+  pubDateStr: p.data.pubDate.toLocaleDateString('zh-CN', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+  }),
+}));
+---
+
+<Layout title={`搜索${query ? `: ${query}` : ''} — PSQ`}>
+  <h2 class="search-page-title">搜索</h2>
+
+  <form class="search-form-inline" action="/search" method="get" role="search">
+    <input type="search" name="q" value={query} placeholder="输入关键词" />
+    <button type="submit">搜索</button>
+  </form>
+
+  <script id="search-data" type="application/json" set:html={JSON.stringify(searchData)} />
+
+  <div id="search-results">
+    {query ? (
+      <div class="search-status">正在搜索 &ldquo;{query}&rdquo;&hellip;</div>
+    ) : (
+      <p style="font-family: var(--font-sans); font-size: 0.82rem; color: var(--color-text-muted);">
+        输入关键词搜索文章
+      </p>
+    )}
+  </div>
+</Layout>
+
+<script>
+  import Fuse from 'fuse.js';
+
+  const searchData = JSON.parse(document.getElementById('search-data').textContent);
+  const urlParams = new URLSearchParams(window.location.search);
+  const query = urlParams.get('q') || '';
+
+  if (query) {
+    const fuse = new Fuse(searchData, {
+      keys: [
+        { name: 'title', weight: 2 },
+        { name: 'description', weight: 1 },
+        { name: 'tags', weight: 1.5 },
+      ],
+      threshold: 0.4,
+      includeScore: true,
+    });
+
+    const results = fuse.search(query);
+    const container = document.getElementById('search-results');
+    if (!container) { /* noop */ } else if (results.length === 0) {
+      container.innerHTML = `<p class="search-status">未找到与 &ldquo;${query}&rdquo; 相关的结果。</p>`;
+    } else {
+      container.innerHTML = `
+        <p class="search-status">找到 ${results.length} 条与 &ldquo;${query}&rdquo; 相关的结果</p>
+        <div class="article-listing">
+          ${results.map(({ item }) => `
+            <div class="article-entry">
+              <div class="article-entry-title">
+                <a href="/blog/${item.id}/">${highlight(item.title, query)}</a>
+              </div>
+              <div class="article-entry-meta">
+                <time datetime="${item.pubDate}">[${item.pubDateStr}]</time>
+                ${item.tags.length ? `<div class="tags">${item.tags.map(t => `<span class="tag">${t}</span>`).join('')}</div>` : ''}
+              </div>
+              <div class="article-entry-authors">${highlight(item.description, query)}</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
+  }
+
+  function highlight(text, q) {
+    if (!text || !q) return text || '';
+    const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return text.replace(
+      new RegExp(`(${escaped})`, 'gi'),
+      '<mark class="search-highlight">$1</mark>'
+    );
+  }
+</script>

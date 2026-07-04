@@ -1,0 +1,90 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection, render } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({
+    params: { slug: post.id },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+
+const allPosts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+const idx = allPosts.findIndex((p) => p.id === post.id);
+const prev = idx < allPosts.length - 1 ? allPosts[idx + 1] : null;
+const next = idx > 0 ? allPosts[idx - 1] : null;
+---
+
+<Layout title={`[PSQ] ${post.data.title} — 文章`}>
+  <div class="detail-subject">
+    {post.data.tags.length > 0
+      ? post.data.tags.map((t, i) => (
+          <span>{i > 0 && <span class="sep">&rsaquo;</span>}<a href={`/tags/${t}/`}>{t}</a></span>
+        ))
+      : 'Uncategorized'}
+  </div>
+
+  <div class="detail-date">
+    [{post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}]
+    {post.data.updatedDate && (
+      <span>，最后修订于 {post.data.updatedDate.toLocaleDateString('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' })}</span>
+    )}
+  </div>
+
+  <h1 class="detail-title">{post.data.title}</h1>
+
+  <div class="detail-authors">
+    <a href="/">PSQ</a>
+  </div>
+
+  <div class="abstract-box">
+    <div class="abstract-label">摘要</div>
+    {post.data.description}
+  </div>
+
+  <table class="meta-table">
+    <tr>
+      <td class="label">分类</td>
+      <td class="value">
+        {post.data.tags.length > 0
+          ? post.data.tags.map((t) => <a href={`/tags/${t}/`} style="margin-right: 8px;">{t}</a>)
+          : 'None'}
+      </td>
+    </tr>
+    <tr>
+      <td class="label">日期</td>
+      <td class="value">
+        {post.data.pubDate.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+      </td>
+    </tr>
+    {headings.length > 0 && (
+      <tr>
+        <td class="label">目录</td>
+        <td class="value">
+          {headings.filter(h => h.depth <= 3).map((h, i) => (
+            <span>
+              {i > 0 && ' &middot; '}
+              <a href={`#${h.slug}`} style={h.depth >= 2 ? 'font-weight: 600;' : ''}>
+                {h.text}
+              </a>
+            </span>
+          ))}
+        </td>
+      </tr>
+    )}
+  </table>
+
+  <div class="article-body">
+    <Content />
+  </div>
+
+  <nav class="detail-nav">
+    <span>{prev && <a href={`/blog/${prev.id}/`}>&laquo; {prev.data.title}</a>}</span>
+    <span><a href="/blog/">全部文章</a></span>
+    <span>{next && <a href={`/blog/${next.id}/`}>{next.data.title} &raquo;</a>}</span>
+  </nav>
+</Layout>

@@ -1,0 +1,44 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  const allTags = [...new Set(posts.flatMap((p) => p.data.tags))];
+  return allTags.map((tag) => ({
+    params: { tag },
+    props: { tag },
+  }));
+}
+
+const { tag } = Astro.props;
+
+const posts = await getCollection('blog');
+const filtered = posts
+  .filter((p) => p.data.tags.includes(tag))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<Layout title={`${tag} — PSQ`}>
+  <h2 class="tag-detail-title">{tag}</h2>
+  <p class="tag-detail-subtitle">共 {filtered.length} 篇</p>
+
+  <div class="article-listing">
+    {filtered.map((post, i) => (
+      <div class="article-entry">
+        <div class="article-entry-id">PSQ-{String(i + 1).padStart(4, '0')}</div>
+        <div class="article-entry-title">
+          <a href={`/blog/${post.id}/`}>{post.data.title}</a>
+        </div>
+        <div class="article-entry-meta">
+          <time datetime={post.data.pubDate.toISOString()}>
+            [{post.data.pubDate.toLocaleDateString('zh-CN', {
+              year: 'numeric', month: '2-digit', day: '2-digit',
+            })}]
+          </time>
+        </div>
+        <div class="article-entry-authors">{post.data.description}</div>
+      </div>
+    ))}
+  </div>
+</Layout>
