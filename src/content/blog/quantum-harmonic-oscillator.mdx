@@ -1,0 +1,318 @@
+---
+title: "一维量子谐振子的代数解法与相干态"
+description: "本文从升降算符的代数结构出发，系统推导一维量子谐振子的能谱、波函数，并讨论相干态的构造及其在量子光学中的物理意义。"
+pubDate: 2026-07-06
+tags: ["量子力学", "数学物理", "谐振子"]
+---
+
+import QuantumOscillator from '../../components/QuantumOscillator.vue';
+
+<article class="paper">
+
+## 摘要
+
+本文给出一维量子谐振子（Quantum Harmonic Oscillator）的完整代数求解方案。利用**升降算符**（ladder operators）的 Heisenberg 代数 $[\hat a, \hat a^\dagger] = 1$，我们可以不依赖微分方程直接导出能谱 $E_n = (n + \tfrac{1}{2})\hbar\omega$ 和 Fock 态 $|n\rangle$。进一步，我们构造**相干态**（coherent state）$|\alpha\rangle$ 作为降算符的本征态，并证明其满足最小不确定性关系——这使得相干态成为"最经典"的量子态，也是量子光学中描述激光的理论基础。
+
+**关键词**：量子谐振子；升降算符；Fock 空间；相干态；最小不确定性
+
+---
+
+## 1. 引言
+
+一维量子谐振子是量子力学中为数不多可以精确求解的系统之一。它的重要性远超一个简单的习题——
+
+- 任何光滑势的极小值附近都可以近似为谐振子势，因此它是微扰论的出发点；
+- 二次量子化后的 Fock 空间是量子场论的基石；
+- 相干态为量子光学提供了从量子到经典的桥梁。
+
+传统教科书通常从坐标表象的 Schrödinger 方程出发：
+
+$$
+-\frac{\hbar^2}{2m}\frac{d^2\psi}{dx^2} + \frac{1}{2}m\omega^2 x^2 \psi = E \psi
+$$
+
+解得波函数为 Hermite 多项式乘以高斯函数。本文采用另一种路径——**纯代数方法**，完全在抽象的 Fock 空间中进行推导。
+
+---
+
+## 2. 代数结构
+
+### 2.1 无量纲化
+
+取自然单位 $\hbar = m = \omega = 1$，Hamiltonian 写为：
+
+$$
+\hat H = \frac{1}{2}\hat p^2 + \frac{1}{2}\hat x^2
+$$
+
+正则对易关系：
+
+$$
+[\hat x, \hat p] = i
+$$
+
+### 2.2 升降算符
+
+定义**降算符**（annihilation operator）和**升算符**（creation operator）：
+
+$$
+\boxed{\hat a = \frac{1}{\sqrt{2}}(\hat x + i\hat p)}
+\qquad
+\boxed{\hat a^\dagger = \frac{1}{\sqrt{2}}(\hat x - i\hat p)}
+$$
+
+逆变换为：
+
+$$
+\hat x = \frac{1}{\sqrt{2}}(\hat a + \hat a^\dagger)
+\qquad
+\hat p = \frac{1}{i\sqrt{2}}(\hat a - \hat a^\dagger)
+$$
+
+由 $[\hat x, \hat p] = i$ 直接计算：
+
+$$
+\begin{aligned}
+[\hat a, \hat a^\dagger] &= \frac{1}{2}[\hat x + i\hat p, \hat x - i\hat p] \\[4pt]
+&= \frac{1}{2}\big([\hat x, \hat x] - i[\hat x, \hat p] + i[\hat p, \hat x] + [\hat p, \hat p]\big) \\[4pt]
+&= \frac{1}{2}(-i \cdot i + i \cdot (-i)) = 1
+\end{aligned}
+$$
+
+于是我们得到了 **Heisenberg 代数**的核心关系：
+
+$$
+\boxed{[\hat a, \hat a^\dagger] = 1}
+$$
+
+### 2.3 粒子数算符与 Hamiltonian
+
+定义**粒子数算符**（number operator）：
+
+$$
+\hat N = \hat a^\dagger \hat a
+$$
+
+显然 $\hat N^\dagger = \hat N$（自伴）。利用对易子将 Hamiltonian 重写：
+
+$$
+\begin{aligned}
+\hat a^\dagger \hat a &= \frac{1}{2}(\hat x - i\hat p)(\hat x + i\hat p) \\
+&= \frac{1}{2}(\hat x^2 + \hat p^2 + i[\hat x, \hat p]) \\
+&= \frac{1}{2}(\hat x^2 + \hat p^2 - 1)
+\end{aligned}
+$$
+
+因此：
+
+$$
+\boxed{\hat H = \hat N + \frac{1}{2}}
+$$
+
+这是一个极其优美的结果：Hamiltonian 与粒子数算符对易，$[\hat H, \hat N] = 0$，它们共享本征态。对角化 $\hat H$ 等价于对角化 $\hat N$。
+
+---
+
+## 3. Fock 空间与能谱
+
+### 3.1 基态
+
+设 $|0\rangle$ 为 $\hat N$ 的归一化本征态，本征值为 $0$：
+
+$$
+\hat N |0\rangle = 0
+$$
+
+这意味着 $\langle 0|\hat a^\dagger \hat a|0\rangle = \|\hat a|0\rangle\|^2 = 0$，所以：
+
+$$
+\boxed{\hat a |0\rangle = 0}
+$$
+
+基态能量：
+
+$$
+\hat H |0\rangle = \left(\hat N + \frac{1}{2}\right) |0\rangle = \frac{1}{2}|0\rangle
+\quad\Rightarrow\quad E_0 = \frac{1}{2}
+$$
+
+这就是著名的**零点能**（zero-point energy）——即使在绝对零度，谐振子也不可能静止。
+
+### 3.2 激发态
+
+计算对易子：
+
+$$
+[\hat N, \hat a^\dagger] = [\hat a^\dagger \hat a, \hat a^\dagger] = \hat a^\dagger[\hat a, \hat a^\dagger] = \hat a^\dagger
+$$
+
+$$
+[\hat N, \hat a] = [\hat a^\dagger \hat a, \hat a] = [\hat a^\dagger, \hat a]\hat a = -\hat a
+$$
+
+现在构造态 $|n\rangle \propto (\hat a^\dagger)^n |0\rangle$：
+
+$$
+\begin{aligned}
+\hat N \hat a^\dagger |0\rangle &= (\hat a^\dagger \hat N + \hat a^\dagger) |0\rangle = \hat a^\dagger |0\rangle \\
+\hat N (\hat a^\dagger)^n |0\rangle &= n (\hat a^\dagger)^n |0\rangle
+\end{aligned}
+$$
+
+因此，归一化的 **Fock 态**（或数态）为：
+
+$$
+\boxed{|n\rangle = \frac{(\hat a^\dagger)^n}{\sqrt{n!}} |0\rangle}
+$$
+
+满足：
+
+$$
+\hat N |n\rangle = n |n\rangle
+\qquad
+\hat H |n\rangle = \left(n + \frac{1}{2}\right) |n\rangle
+$$
+
+能谱是等间距的：
+
+$$
+\boxed{E_n = n + \frac{1}{2} \quad (n = 0, 1, 2, \ldots)}
+$$
+
+恢复单位后，$E_n = \left(n + \frac{1}{2}\right)\hbar\omega$。
+
+### 3.3 升降作用
+
+由对易关系可得：
+
+$$
+\hat a |n\rangle = \sqrt{n}\,|n-1\rangle
+\qquad
+\hat a^\dagger |n\rangle = \sqrt{n+1}\,|n+1\rangle
+$$
+
+这两个公式是代数方法的核心。任何力学量的期望值都可以通过升降算符方便地计算。
+
+---
+
+## 4. 波函数（坐标表象）
+
+为完整性，我们在坐标表象中给出波函数。基态条件 $\hat a|0\rangle = 0$ 写作：
+
+$$
+\frac{1}{\sqrt{2}}\left(x + \frac{d}{dx}\right)\psi_0(x) = 0
+$$
+
+解得：
+
+$$
+\psi_0(x) = \pi^{-1/4} e^{-x^2/2}
+$$
+
+由升算符递推：
+
+$$
+\psi_n(x) = \frac{1}{\sqrt{n!}}(\hat a^\dagger)^n \psi_0(x) = \frac{1}{\pi^{1/4}\sqrt{2^n n!}} H_n(x) e^{-x^2/2}
+$$
+
+其中 $H_n(x)$ 为 **Hermite 多项式**，满足递推 $H_{n+1} = 2x H_n - 2n H_{n-1}$。
+
+<QuantumOscillator client:load />
+
+前几个波函数：
+
+$$
+\begin{aligned}
+\psi_0(x) &= \pi^{-1/4} e^{-x^2/2} \\[4pt]
+\psi_1(x) &= \pi^{-1/4} \sqrt{2}\,x e^{-x^2/2} \\[4pt]
+\psi_2(x) &= \pi^{-1/4} \frac{2x^2 - 1}{\sqrt{2}} e^{-x^2/2} \\[4pt]
+\psi_3(x) &= \pi^{-1/4} \frac{2x^3 - 3x}{\sqrt{3}} e^{-x^2/2}
+\end{aligned}
+$$
+
+---
+
+## 5. 相干态——"最经典"的量子态
+
+### 5.1 定义
+
+相干态 $|\alpha\rangle$ 定义为降算符的本征态（$\alpha \in \mathbb{C}$）：
+
+$$
+\boxed{\hat a |\alpha\rangle = \alpha |\alpha\rangle}
+$$
+
+在 Fock 基下展开：
+
+$$
+|\alpha\rangle = e^{-|\alpha|^2/2} \sum_{n=0}^{\infty} \frac{\alpha^n}{\sqrt{n!}} |n\rangle
+$$
+
+其中玻色子数服从 **Poisson 分布**：
+
+$$
+P(n) = |\langle n | \alpha \rangle|^2 = e^{-|\alpha|^2} \frac{|\alpha|^{2n}}{n!}
+$$
+
+均值和方差均为 $|\alpha|^2$。
+
+### 5.2 最小不确定性
+
+坐标和动量在相干态下的方差：
+
+$$
+\begin{aligned}
+(\Delta x)^2 &= \langle\alpha| \hat x^2 |\alpha\rangle - \langle\alpha| \hat x |\alpha\rangle^2 = \frac{1}{2} \\
+(\Delta p)^2 &= \langle\alpha| \hat p^2 |\alpha\rangle - \langle\alpha| \hat p |\alpha\rangle^2 = \frac{1}{2}
+\end{aligned}
+$$
+
+因此：
+
+$$
+\boxed{\Delta x \cdot \Delta p = \frac{1}{2}}
+$$
+
+这恰好饱和了 Heisenberg 不确定性原理的下界！相干态在相空间中的 Wigner 函数是一个高斯波包，不做任何扩散地沿着经典轨迹运动——这就是为什么说它是"最接近经典"的量子态。
+
+### 5.3 时间演化
+
+在 Hamiltonian $\hat H = \hat N + \frac{1}{2}$ 下：
+
+$$
+e^{-i\hat H t} |\alpha\rangle = e^{-i t/2} |\alpha e^{-i t}\rangle
+$$
+
+一个相干态在时间演化下仍然保持为相干态，只是参数获得了相位 $\alpha(t) = \alpha e^{-i t}$。期望值 $\langle \hat x \rangle(t) \propto |\alpha|\cos(t - \varphi)$ 严格按经典谐振子运动。
+
+### 5.4 相干态是位移真空态
+
+相干态也可以由位移算符作用于真空得到：
+
+$$
+|\alpha\rangle = \hat D(\alpha) |0\rangle
+\quad\text{其中}\quad
+\hat D(\alpha) = \exp\!\big(\alpha \hat a^\dagger - \alpha^* \hat a\big)
+$$
+
+利用 **Baker–Campbell–Hausdorff 公式**：
+
+$$
+e^{A+B} = e^A e^B e^{-[A,B]/2} \quad (\text{当 } [A,[A,B]] = [B,[A,B]] = 0)
+$$
+
+立即得到 $\hat D(\alpha) = e^{-|\alpha|^2/2} e^{\alpha \hat a^\dagger} e^{-\alpha^* \hat a}$，与之前的 Fock 基展开一致。
+
+---
+
+## 6. 总结
+
+本文展示了如何从最基本的对易关系 $[\hat a, \hat a^\dagger] = 1$ 出发，完全用代数方法构建一维量子谐振子的整个解空间。这套方法的威力在于：
+
+1. **普适性**：同样的代数结构出现在光子、声子、磁振子等所有玻色子系统中；
+2. **计算效率**：矩阵元 $\langle m|\hat x|n\rangle$、$\langle m|\hat p|n\rangle$ 可以直接从升降公式读出；
+3. **概念清晰**：相干态自然地作为降算符的本征态出现，统一了量子与经典的描述。
+
+对于希望进一步阅读的读者，推荐 Dirac 的 *The Principles of Quantum Mechanics* 以及 Glauber 1963 年关于光相干性的经典论文。
+
+</article>

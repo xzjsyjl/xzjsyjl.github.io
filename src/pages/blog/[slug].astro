@@ -65,14 +65,13 @@ const next = idx > 0 ? allPosts[idx - 1] : null;
       <tr>
         <td class="label">目录</td>
         <td class="value">
-          {headings.filter(h => h.depth <= 3).map((h, i) => (
-            <span>
-              {i > 0 && ' &middot; '}
-              <a href={`#${h.slug}`} style={h.depth >= 2 ? 'font-weight: 600;' : ''}>
-                {h.text}
-              </a>
-            </span>
-          ))}
+          <ul class="toc-list">
+            {headings.filter(h => h.depth >= 2 && h.depth <= 3).map((h) => (
+              <li class={`toc-item toc-depth-${h.depth}`}>
+                <a href={`#${h.slug}`}>{h.text}</a>
+              </li>
+            ))}
+          </ul>
         </td>
       </tr>
     )}

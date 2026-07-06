@@ -626,3 +626,73 @@ a.tag:hover {
   .arxiv-item-desc, .arxiv-item-meta { padding-left: 0; }
   .detail-nav { flex-direction: column; }
 }
+
+/* ===== Paper-style Article (MDX blog posts) ===== */
+.paper {
+  max-width: 720px;
+  margin: 0 auto;
+  font-family: "Georgia", "Noto Serif CJK SC", "Source Han Serif SC", serif;
+  line-height: 1.85;
+  color: #222;
+}
+
+.paper h2 {
+  font-size: 1.4rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #2266cc;
+  padding-bottom: 0.3rem;
+}
+
+.paper h3 {
+  font-size: 1.15rem;
+  margin-top: 1.8rem;
+  margin-bottom: 0.6rem;
+  color: #333;
+}
+
+.paper p {
+  margin: 1rem 0;
+  text-align: justify;
+}
+
+.paper .katex-display {
+  margin: 1.4rem 0;
+}
+
+/* ===== Table of Contents ===== */
+.toc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toc-item {
+  line-height: 1.6;
+}
+
+.toc-item a {
+  color: var(--color-link);
+  text-decoration: none;
+}
+
+.toc-item a:hover {
+  text-decoration: underline;
+}
+
+.toc-depth-2 {
+  font-weight: 600;
+  font-size: 0.78rem;
+  margin-top: 2px;
+}
+
+.toc-depth-3 {
+  font-size: 0.75rem;
+  padding-left: 16px;
+  color: var(--color-text-secondary);
+}
+
+.toc-depth-3::before {
+  content: "└ ";
+  color: #bbb;
+}
